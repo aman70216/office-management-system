@@ -3,6 +3,9 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const Department = require("./models/Department");
 const Employee = require("./models/Employee");
+const locationRoutes = require('./routes/locationRoutes');
+const methodOverride = require('method-override');
+const mongoose = require("mongoose");
 const path = require("path");
 
 dotenv.config();
@@ -13,10 +16,13 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
+app.use('/locations', locationRoutes);
 
 // Set view engine
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
 
 // Routes
 const departmentRoutes = require("./routes/departmentRoutes");

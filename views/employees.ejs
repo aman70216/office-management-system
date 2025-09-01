@@ -56,7 +56,12 @@
           </select>
         </div>
         <div class="col-md-2">
-          <input type="text" name="supervisor" class="form-control" placeholder="Supervisor ID (optional)">
+          <select name="supervisor" class="form-select">
+            <option value="">-- No Supervisor --</option>
+            <% employees.forEach(s => { %>
+              <option value="<%= s._id %>"><%= s.name %></option>
+            <% }) %>
+          </select>
         </div>
         <div class="col-12 text-end">
           <button type="submit" class="btn btn-success">Add Employee</button>
@@ -80,23 +85,46 @@
     <tbody>
       <% employees.forEach(emp => { %>
         <tr>
-          <td><%= emp.name %></td>
-          <td><%= emp.email %></td>
-          <td><%= emp.position %></td>
-          <td><%= emp.department ? emp.department.name : '-' %></td>
-          <td><%= emp.supervisor ? emp.supervisor.name : '-' %></td>
-          <td>
-            <!-- Edit -->
-            <form action="/employees/<%= emp._id %>?_method=PUT" method="POST" class="d-inline">
-              <button type="submit" class="btn btn-sm btn-warning">Edit</button>
-            </form>
-            <!-- Delete -->
-            <form action="/employees/<%= emp._id %>?_method=DELETE" method="POST" class="d-inline">
-              <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this employee?')">
-                Delete
-              </button>
-            </form>
-          </td>
+          <!-- Update form inside table row -->
+          <form action="/employees/<%= emp._id %>?_method=PUT" method="POST">
+            <td>
+              <input type="text" name="name" value="<%= emp.name %>" class="form-control" required>
+            </td>
+            <td>
+              <input type="email" name="email" value="<%= emp.email %>" class="form-control" required>
+            </td>
+            <td>
+              <input type="text" name="position" value="<%= emp.position %>" class="form-control" required>
+            </td>
+            <td>
+              <select name="department" class="form-select" required>
+                <% departments.forEach(d => { %>
+                  <option value="<%= d._id %>" <%= emp.department && emp.department._id.toString() === d._id.toString() ? 'selected' : '' %>>
+                    <%= d.name %>
+                  </option>
+                <% }) %>
+              </select>
+            </td>
+            <td>
+              <select name="supervisor" class="form-select">
+                <option value="">-- No Supervisor --</option>
+                <% employees.forEach(s => { %>
+                  <option value="<%= s._id %>" <%= emp.supervisor && emp.supervisor._id.toString() === s._id.toString() ? 'selected' : '' %>>
+                    <%= s.name %>
+                  </option>
+                <% }) %>
+              </select>
+            </td>
+            <td>
+              <button type="submit" class="btn btn-sm btn-warning">Update</button>
+          </form>
+          <!-- Delete -->
+          <form action="/employees/<%= emp._id %>?_method=DELETE" method="POST" class="d-inline">
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this employee?')">
+              Delete
+            </button>
+          </form>
+            </td>
         </tr>
       <% }) %>
     </tbody>

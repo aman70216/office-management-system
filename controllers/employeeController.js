@@ -1,4 +1,5 @@
 // controllers/employeeController.js
+const mongoose = require("mongoose");
 const Employee = require('../models/Employee');
 const Department = require('../models/Department');
 
@@ -47,7 +48,10 @@ exports.getEmployees = async (req, res) => {
 // Create Employee
 exports.createEmployee = async (req, res) => {
   try {
-    if (!req.body.supervisor) req.body.supervisor = null;
+    if (!req.body.supervisor || !mongoose.Types.ObjectId.isValid(req.body.supervisor)) {
+      req.body.supervisor = null; // ignore invalid supervisor
+    }
+
     await Employee.create(req.body);
     res.redirect('/employees');
   } catch (err) {
@@ -55,17 +59,20 @@ exports.createEmployee = async (req, res) => {
   }
 };
 
+
 // Update Employee
 exports.updateEmployee = async (req, res) => {
   try {
-    if (!req.body.supervisor) req.body.supervisor = null;
+    if (!req.body.supervisor || !mongoose.Types.ObjectId.isValid(req.body.supervisor)) {
+      req.body.supervisor = null;
+    }
+
     await Employee.findByIdAndUpdate(req.params.id, req.body, { runValidators: true });
     res.redirect('/employees');
   } catch (err) {
     res.status(400).send(err.message);
   }
 };
-
 // Delete Employee
 exports.deleteEmployee = async (req, res) => {
   try {
